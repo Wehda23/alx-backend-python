@@ -3,13 +3,19 @@
 A basic implmentation of Asynchronous programming in python
 """
 import asyncio
+from typing import List, Optional
 
 
-wait_n = __import__("1-concurrent_coroutines").wait_n
+wait_random = __import__("0-basic_async_syntax").wait_random
 
 
-async def task_wait_n(n: int, max_delay: int) -> asyncio.Task:
+async def task_wait_n(n: int, max_delay: int) -> List[float]:
     """
     Measures the time it takes to execute n tasks
     """
-    return await asyncio.create_task(wait_n(n, max_delay))
+    tasks = [asyncio.create_task(wait_random(max_delay)) for _ in range(n)]
+    list_delays: list[Optional[float]] = []
+    for task in asyncio.as_completed(tasks):
+        delay = await task
+        list_delays.append(delay)
+    return list_delays
